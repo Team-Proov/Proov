@@ -30,5 +30,14 @@ dependencyResolutionManagement {
 
 include(":androidApp")
 include(":shared")
-include(":core:designsystem")
-include(":presentation:home")
+
+include(
+    ":core:designsystem",
+    ":core:localstorage",
+    ":core:navigation",
+    ":core:network"
+)
+include(
+    ":presentation:home"
+)
+include(":core:trigger")

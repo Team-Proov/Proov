@@ -1,5 +1,5 @@
 plugins {
-    id("proov.kmp.compose")
+    alias(libs.plugins.proov.kmp.compose)
 }
 
 kotlin {

@@ -1,5 +1,5 @@
 plugins {
-    id("proov.kmp.compose")
+    alias(libs.plugins.proov.kmp.compose)
 }
 
 kotlin {
@@ -34,11 +34,19 @@ kotlin {
             implementation(libs.compose.uiTooling)
         }
         commonMain.dependencies {
+            // AppGraph, MainTab의 공개 타입이므로 androidApp/iosApp까지 api로 전이한다
+            api(project(":core:navigation"))
+            api(libs.metrox.viewmodel)
+            api(libs.coil)
+            // 그래프를 소유한 모듈이므로 기여 모듈을 모두 직접 의존해야 한다(Metro는 클래스패스에서 기여를 수집)
             implementation(project(":core:designsystem"))
-            implementation(libs.compose.components.resources)
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(project(":core:localstorage"))
+            implementation(project(":core:network"))
+            implementation(project(":presentation:home"))
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor3)
+            implementation(libs.kermit)
+            implementation(libs.bundles.compose.feature)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

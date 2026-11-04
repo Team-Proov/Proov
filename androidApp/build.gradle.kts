@@ -3,6 +3,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeCompiler)
+    // createGraphFactory를 쓰는 모듈이므로 컴파일러 플러그인이 필요하다
+    alias(libs.plugins.metro)
 }
 
 kotlin {
@@ -20,11 +22,11 @@ dependencies {
 }
 
 android {
-    namespace = "com.kindl.proov"
+    namespace = "com.proov.proov"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.kindl.proov"
+        applicationId = "com.proov.proov"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1

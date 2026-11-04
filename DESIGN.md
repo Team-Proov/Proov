@@ -117,7 +117,25 @@
 
 ---
 
-## 3. 이 문서에 없는 것
+## 3. 코드 매핑 (`core:designsystem`)
+
+용도 토큰(brand 등)은 두지 않고 Figma 이름을 그대로 쓴다. 화면 코드가 색을 직접 고른다.
+
+| Figma | 코드 |
+|---|---|
+| Primary/Green/500 | `Proov.colors.primary.green500` |
+| Neutral/900 | `Proov.colors.neutral.n900` (숫자 시작을 피하려고 `n` 접두어) |
+| System/Danger/600 | `Proov.colors.system.danger600` |
+| Title/20 | `Proov.typography.title.t20` |
+| Body/16 | `Proov.typography.body.b16` |
+
+- 타이포그래피 그룹 접두어: `d`(Display), `h`(Heading), `t`(Title), `b`(Body), `l`(Label), `c`(Caption)
+- `MaterialTheme`은 background, surface, onBackground, onSurface만 Neutral로 연결했다. `primary` 계열은 메인 컬러 확정 후 연결한다.
+- 다크 테마는 지원하지 않는다.
+
+---
+
+## 4. 이 문서에 없는 것
 
 - Spacing, radius, elevation 토큰: 확인한 노드(color/typography 섹션)에 없었다.
 - Layout foundations 섹션(`236:21123`)에 iOS(393×852), Android(360×800) 템플릿과 Safe Area 구조가 있다. 수치 규칙만 확인했고 별도 토큰화는 하지 않았다.

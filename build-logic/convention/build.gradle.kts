@@ -14,15 +14,15 @@ gradlePlugin {
     plugins {
         register("kmpLibrary") {
             id = "proov.kmp.library"
-            implementationClass = "com.kindl.proov.buildlogic.KmpLibraryConventionPlugin"
+            implementationClass = "com.proov.proov.buildlogic.KmpLibraryConventionPlugin"
         }
         register("kmpCompose") {
             id = "proov.kmp.compose"
-            implementationClass = "com.kindl.proov.buildlogic.KmpComposeConventionPlugin"
+            implementationClass = "com.proov.proov.buildlogic.KmpComposeConventionPlugin"
         }
         register("kmpFeature") {
             id = "proov.kmp.feature"
-            implementationClass = "com.kindl.proov.buildlogic.KmpFeatureConventionPlugin"
+            implementationClass = "com.proov.proov.buildlogic.KmpFeatureConventionPlugin"
         }
     }
 }
