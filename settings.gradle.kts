@@ -35,9 +35,10 @@ include(
     ":core:designsystem",
     ":core:localstorage",
     ":core:navigation",
-    ":core:network"
+    ":core:network",
+    ":core:trigger",
+    ":core:model"
 )
 include(
     ":presentation:home"
 )
-include(":core:trigger")

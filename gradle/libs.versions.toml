@@ -12,6 +12,7 @@ android-targetSdk = "37"
 # AndroidX
 androidx-activity = "1.13.0"
 androidx-appcompat = "1.8.0"
+androidx-compose-annotation = "1.12.1"
 androidx-core = "1.19.1"
 androidx-datastore = "1.3.0"
 androidx-lifecycle = "2.11.0"
@@ -28,6 +29,7 @@ buildkonfig = "0.23.0"
 ktor = "3.6.1"
 kotlinx-serialization = "1.12.0"
 kotlinxImmutable = "0.5.2"
+kotlinx-coroutines = "1.11.0"
 
 # DI
 metro = "1.5.2"
@@ -58,6 +60,9 @@ ktor-serialization-kotlinxJson = { group = "io.ktor", name = "ktor-serialization
 # Kotlinx Serialization
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
+# Kotlinx Coroutines
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+
 # Kotlinx Immutable Collections
 kotlinx-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinxImmutable" }
 
@@ -77,6 +82,7 @@ coil-network-ktor3 = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", 
 kermit ={ group = "co.touchlab", name = "kermit", version.ref = "kermit" }
 
 # AndroidX
+androidx-compose-runtimeAnnotation = { group = "androidx.compose.runtime", name = "runtime-annotation", version.ref = "androidx-compose-annotation" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-datastore-preferences-core = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "androidx-datastore" }
