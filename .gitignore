@@ -17,7 +17,7 @@ keystore/private_key.pepk
 
 # Android Studio generated files and folders
 captures/
-.externalNativeBuild/
+.externalNati veBuild/
 .cxx/
 *.apk
 output.json
@@ -183,3 +183,5 @@ GoogleService-Info.plist
 *.p12
 *.mobileprovision
 secrets.properties
+
+experiments
