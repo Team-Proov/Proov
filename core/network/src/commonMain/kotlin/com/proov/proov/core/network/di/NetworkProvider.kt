@@ -1,4 +1,4 @@
-package com.proov.proov.core.network
+package com.proov.proov.core.network.di
 
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo

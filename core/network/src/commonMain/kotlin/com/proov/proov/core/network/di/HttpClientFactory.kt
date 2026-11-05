@@ -1,5 +1,6 @@
-package com.proov.proov.core.network
+package com.proov.proov.core.network.di
 
+import com.proov.proov.core.network.BuildKonfig
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation

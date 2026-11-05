@@ -12,9 +12,15 @@ import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 fun ProovRoot(appGraph: AppGraph) {
     setSingletonImageLoaderFactory { appGraph.imageLoader }
 
-    CompositionLocalProvider(LocalMetroViewModelFactory provides appGraph.metroViewModelFactory) {
+    val appState = rememberProovAppState(
+        networkMonitor = appGraph.networkMonitor,
+    )
+
+    CompositionLocalProvider(
+        LocalMetroViewModelFactory provides appGraph.metroViewModelFactory
+    ) {
         ProovTheme {
-            ProovApp()
+            ProovApp(appState = appState)
         }
     }
 }

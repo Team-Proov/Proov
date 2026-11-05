@@ -3,20 +3,38 @@ package com.proov.proov.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.proov.proov.core.network.monitor.NetworkMonitor
 import com.proov.proov.ui.navigation.MainTab
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 @Stable
 class ProovAppState(
-    val navController: NavHostController
+    val navController: NavHostController,
+    coroutineScope: CoroutineScope,
+    networkMonitor: NetworkMonitor,
 ) {
+    val isOffline: StateFlow<Boolean> = networkMonitor.isOnline
+        .map(Boolean::not)
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false
+        )
+
     val tabs: ImmutableList<MainTab> = MainTab.entries.toImmutableList()
 
     val currentDestination: NavDestination?
@@ -40,5 +58,13 @@ class ProovAppState(
 
 @Composable
 fun rememberProovAppState(
+    networkMonitor: NetworkMonitor,
     navController: NavHostController = rememberNavController(),
-): ProovAppState = remember(navController) { ProovAppState(navController) }
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+): ProovAppState =  remember(networkMonitor, navController, coroutineScope) {
+    ProovAppState(
+        networkMonitor = networkMonitor,
+        navController = navController,
+        coroutineScope = coroutineScope
+    )
+}

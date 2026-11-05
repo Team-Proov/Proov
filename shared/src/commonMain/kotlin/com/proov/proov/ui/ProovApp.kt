@@ -9,13 +9,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
+import com.proov.proov.core.designsystem.component.dialog.ProovDialog
 import com.proov.proov.core.designsystem.theme.Proov
+import com.proov.proov.core.trigger.LocalGlobalUiEventTrigger
+import com.proov.proov.core.trigger.model.DialogState
+import com.proov.proov.core.trigger.model.DialogType
+import com.proov.proov.core.trigger.ui.GlobalMessageHost
+import com.proov.proov.core.trigger.ui.rememberDialogStateHolder
+import com.proov.proov.core.trigger.ui.rememberGlobalMessageState
+import com.proov.proov.core.trigger.ui.rememberGlobalUiEventHolder
 import com.proov.proov.presentation.home.navigation.Home
 import com.proov.proov.presentation.home.navigation.homeNavGraph
 import com.proov.proov.ui.navigation.MainTab
@@ -24,7 +33,7 @@ import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun ProovApp(
-    appState: ProovAppState = rememberProovAppState(),
+    appState: ProovAppState,
     viewModel: MainViewModel = metroViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -33,25 +42,69 @@ fun ProovApp(
     // MainRouteTab 라우트에서만 currentTab이 null이 아니므로 바텀 바가 보인다
     val currentTab = appState.currentTab
 
-    Scaffold(
-        containerColor = Proov.colors.neutral.n50,
-        bottomBar = {
-            ProovBottomBar(
-                isVisible = currentTab != null,
-                tabs = appState.tabs,
-                currentTab = currentTab,
-                onTabClick = appState::navigateToTab,
-            )
-        },
-    ) { padding ->
-        NavHost(
-            navController = appState.navController,
-            startDestination = Home,
-            modifier = Modifier.padding(padding),
-        ) {
-            homeNavGraph()
+    val isOffline by appState.isOffline.collectAsStateWithLifecycle()
+    val messageState = rememberGlobalMessageState()
+    val dialogStateHolder = rememberDialogStateHolder()
+    val globalUiEventHolder = rememberGlobalUiEventHolder(messageState, dialogStateHolder)
+
+    CompositionLocalProvider(
+        LocalGlobalUiEventTrigger provides globalUiEventHolder
+    ) {
+        Scaffold(
+            containerColor = Proov.colors.neutral.n50,
+            snackbarHost = { GlobalMessageHost(messageState) },
+            bottomBar = {
+                ProovBottomBar(
+                    isVisible = currentTab != null,
+                    tabs = appState.tabs,
+                    currentTab = currentTab,
+                    onTabClick = appState::navigateToTab,
+                )
+            },
+        ) { padding ->
+            NavHost(
+                navController = appState.navController,
+                startDestination = Home,
+                modifier = Modifier.padding(padding),
+            ) {
+                homeNavGraph()
+            }
         }
+
+        ProovDialogSlot(
+            isOffline = isOffline,
+            dialogState = dialogStateHolder.dialogState,
+            onDismiss = dialogStateHolder::dismissDialog,
+            onShowToast = globalUiEventHolder.showToast,
+        )
     }
+}
+
+/** 앱에서 다이얼로그는 하나만 뜬다. 오프라인이면 다른 다이얼로그보다 네트워크 다이얼로그를 우선한다. */
+@Composable
+private fun ProovDialogSlot(
+    isOffline: Boolean,
+    dialogState: DialogState,
+    onDismiss: () -> Unit,
+    onShowToast: (String) -> Unit,
+) {
+    val type = if (isOffline) DialogType.NETWORK else dialogState.type ?: return
+
+    ProovDialog(
+        title = type.title,
+        content = type.content,
+        confirmText = type.confirmText,
+        dismissible = type.dismissible,
+        onConfirm = {
+            if (isOffline) {
+                onShowToast("네트워크가 아직 연결되지 않았어요")
+            } else {
+                dialogState.onConfirm()
+                onDismiss()
+            }
+        },
+        onDismissRequest = { if (!isOffline) onDismiss() },
+    )
 }
 
 @Composable

@@ -1,6 +1,7 @@
 package com.proov.proov.di
 
 import coil3.ImageLoader
+import com.proov.proov.core.network.monitor.NetworkMonitor
 import dev.zacsweers.metrox.viewmodel.ViewModelGraph
 
 /**
@@ -9,4 +10,5 @@ import dev.zacsweers.metrox.viewmodel.ViewModelGraph
  */
 interface AppGraph : ViewModelGraph {
     val imageLoader: ImageLoader
+    val networkMonitor: NetworkMonitor
 }
