@@ -1,6 +1,5 @@
 plugins {
-    alias(libs.plugins.proov.kmp.library)
-    alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.proov.kmp.serialization)
 }
 
 kotlin {

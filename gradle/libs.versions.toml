@@ -120,6 +120,8 @@ compose-compilerGradlePlugin = { group = "org.jetbrains.kotlin", name = "compose
 proov-kmp-library = { id = "proov.kmp.library", version = "unspecified" }
 proov-kmp-compose = { id = "proov.kmp.compose", version = "unspecified" }
 proov-kmp-feature = { id = "proov.kmp.feature", version = "unspecified" }
+proov-kmp-serialization = { id = "proov.kmp.serialization", version = "unspecified" }
+proov-android-application = { id = "proov.android.application", version = "unspecified" }
 
 # Build config (KMP 공통 BuildConfig 대체)
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }

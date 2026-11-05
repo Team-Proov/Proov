@@ -3,7 +3,7 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.proov.kmp.library)
-    alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.proov.kmp.serialization)
     alias(libs.plugins.buildkonfig)
 }
 
@@ -26,7 +26,7 @@ kotlin {
             api(libs.ktor.client.core)
             implementation(libs.bundles.ktor.common)
             implementation(libs.kermit)
-            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.coroutines.core)
         }
         // 엔진은 HttpClient()가 클래스패스에서 자동으로 고르므로 expect/actual이 필요 없다
         androidMain.dependencies {

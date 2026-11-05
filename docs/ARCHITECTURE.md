@@ -43,5 +43,7 @@ MVVM으로 구성하며 화면 상태는 `UiState`로, 사용자 동작은 ViewM
 
 ## 모듈 추가 규칙
 
-- 새 모듈은 `build-logic`의 컨벤션 플러그인(`KmpLibraryConventionPlugin`, `KmpFeatureConventionPlugin`, `KmpComposeConventionPlugin`)을 적용한다. 적용은 `alias(libs.plugins.proov.kmp.library)`처럼 버전 카탈로그 별칭으로 하며, 플러그인을 추가하면 `build-logic`의 `gradlePlugin` 등록과 `libs.versions.toml`의 `[plugins]`에 함께 등록한다.
+- 새 모듈은 `build-logic`의 컨벤션 플러그인(`proov.kmp.library`, `proov.kmp.compose`, `proov.kmp.serialization`, `proov.kmp.feature`, 앱 모듈은 `proov.android.application`)을 적용한다. 적용은 `alias(libs.plugins.proov.kmp.library)`처럼 버전 카탈로그 별칭으로 하며, 플러그인을 추가하면 `build-logic`의 `gradlePlugin` 등록과 `libs.versions.toml`의 `[plugins]`에 함께 등록한다.
+- 플러그인 클래스(진입점)는 `build-logic/convention/src/main/kotlin` 루트에 두고, 구현체(`DependencyManager`, `AppConfig`, `Catalog`)는 `com.proov.proov.buildlogic` 패키지에 `internal`로 숨긴다. 플러그인이 추가하는 의존성은 `DependencyManager`에 기능별 함수로 모은다. SDK·JVM 버전·namespace 규칙·플러그인 ID 상수는 `AppConfig.kt`에서 관리한다. JVM 타깃은 11이다.
+- 모듈 간 의존은 `implementation(projects.core.model)`처럼 타입 세이프 접근자를 쓴다. 별도 빌드인 `build-logic` 안에서는 접근자를 쓸 수 없으므로, 플러그인이 추가하는 core 의존(`DependencyManager.addFeatureDependencies`)만 경로 문자열로 남긴다.
 - 모듈 추가 시 `settings.gradle.kts`에 등록하고 이 문서의 모듈 표를 갱신한다.

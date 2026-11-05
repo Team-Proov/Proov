@@ -9,3 +9,5 @@ internal val Project.libs: VersionCatalog
     get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
 internal fun VersionCatalog.version(alias: String): String = findVersion(alias).get().toString()
+
+internal fun VersionCatalog.intVersion(alias: String): Int = version(alias).toInt()
