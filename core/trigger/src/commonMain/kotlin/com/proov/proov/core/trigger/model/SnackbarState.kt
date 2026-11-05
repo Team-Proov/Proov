@@ -1,4 +1,4 @@
-package com.proov.proov.core.model.trigger
+package com.proov.proov.core.trigger.model
 
 import androidx.compose.runtime.Immutable
 

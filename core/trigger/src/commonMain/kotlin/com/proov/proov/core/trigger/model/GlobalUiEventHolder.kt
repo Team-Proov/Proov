@@ -1,8 +1,6 @@
-package com.proov.proov.core.model.trigger
+package com.proov.proov.core.trigger.model
 
 import androidx.compose.runtime.Stable
-import com.proov.proov.core.model.trigger.DialogTrigger
-import com.proov.proov.core.model.trigger.SnackbarState
 
 @Stable
 class GlobalUiEventHolder(

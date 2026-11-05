@@ -43,6 +43,7 @@ kotlin {
             implementation(projects.core.localstorage)
             implementation(projects.core.model)
             implementation(projects.core.network)
+            implementation(projects.core.trigger)
             implementation(projects.presentation.home)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor3)
