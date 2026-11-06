@@ -34,6 +34,7 @@ include(":androidApp")
 include(":shared")
 
 include(
+    ":core:common",
     ":core:designsystem",
     ":core:localstorage",
     ":core:navigation",

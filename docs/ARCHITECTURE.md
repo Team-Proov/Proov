@@ -13,6 +13,7 @@
 | `shared` | iOS Framework 우산 모듈이자 앱의 조합 지점. `commonMain`의 `ui`(`ProovRoot`, `ProovApp`, `ProovAppState`, `MainViewModel`, `MainTab`)와 `di`(`AppGraph`, ViewModel 팩토리, 이미지 로더 바인딩), 플랫폼별 그래프(`AndroidAppGraph`, `IosAppGraph`), iOS 진입점(`MainViewController`)을 둔다 |
 | `presentation:*` | 기능별 화면, UiState, ViewModel, 라우트와 `NavGraphBuilder` 확장 |
 | `core:*` | 여러 기능이 공유하는 모듈(`core:designsystem`, `core:navigation` 등) |
+| `core:common` | 여러 모듈이 공유하는 확장 함수(`extension`)와 유틸리티(`util`). Compose와 Lifecycle의 KMP 아티팩트까지만 의존하며 `implementation`으로만 선언해 소비 모듈로 전이하지 않는다. 플랫폼 API는 쓰지 않고, 다른 `core:*` 모듈을 참조하지 않는다 |
 | `core:localstorage` | 일반 설정 저장소(DataStore Preferences, KMP 공통 구현). Metro `LocalStorageProvider`가 `DataStore<Preferences>`를 제공하고, 파일 경로(`@Named(PREFERENCES_FILE)`)만 플랫폼 그래프가 제공한다. 토큰 같은 민감한 값의 보안 저장소는 범위 밖이며 로그인 설계 때 별도로 정한다 |
 | `core:trigger` | 앱 공통 UI 이벤트(토스트, 스낵바, 다이얼로그). `GlobalUiEventHolder`와 `LocalGlobalUiEventTrigger`, 표시를 담당하는 `GlobalMessageHost`, 앱 공통 다이얼로그 문구를 정의한 `DialogType`을 둔다. `shared`의 `ProovApp`이 홀더를 제공하고 다이얼로그는 슬롯 하나로 표시한다. 각 화면은 사이드 이펙트를 수집해 `LocalGlobalUiEventTrigger.current`로 호출하며, `DialogType`에는 앱 공통 정책만 두고 기능 전용 다이얼로그는 해당 화면에서 `ProovDialog`를 직접 선언한다 |
 | `core:network` | Ktor `HttpClient` 생성과 Metro `NetworkProvider`. 서버 base URL은 `local.properties`의 `BASE_URL`로 주입한다. `NetworkMonitor`(`isOnline: Flow<Boolean>`) 인터페이스는 공통이고, 구현체(`AndroidNetworkMonitor`, `iOSNetworkMonitor`)는 각 플랫폼 소스셋에서 `@ContributesBinding`으로 바인딩한다. 오프라인 여부는 `ProovAppState.isOffline`으로 노출한다 |
