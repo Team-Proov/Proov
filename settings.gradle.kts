@@ -35,6 +35,7 @@ include(":shared")
 
 include(
     ":core:common",
+    ":core:crypto",
     ":core:designsystem",
     ":core:localstorage",
     ":core:navigation",

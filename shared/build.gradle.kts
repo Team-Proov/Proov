@@ -39,6 +39,7 @@ kotlin {
             api(libs.metrox.viewmodel)
             api(libs.coil)
             // 그래프를 소유한 모듈이므로 기여 모듈을 모두 직접 의존해야 한다(Metro는 클래스패스에서 기여를 수집)
+            implementation(projects.core.crypto)
             implementation(projects.core.designsystem)
             implementation(projects.core.localstorage)
             implementation(projects.core.model)
