@@ -14,6 +14,5 @@ import java.io.File
 @Inject
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
-class AndroidSecureStorage(
-    context: Context,
-) : SecureStorage by FileSecureStorage(File(context.noBackupFilesDir, "secure"), KeystoreAesKeys())
+class AndroidSecureStorage(context: Context) :
+    SecureStorage by FileSecureStorage(File(context.noBackupFilesDir, "secure"), KeystoreAesKeys())

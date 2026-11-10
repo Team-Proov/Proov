@@ -22,9 +22,7 @@ private object KermitKtorLogger : Logger {
     override fun log(message: String) = kermit.d { message }
 }
 
-fun createHttpClient(
-    baseUrl: String = BuildKonfig.BASE_URL
-): HttpClient = HttpClient {
+fun createHttpClient(baseUrl: String = BuildKonfig.BASE_URL): HttpClient = HttpClient {
     // 데이터 직렬화 , 역질렬화
     install(ContentNegotiation) {
         json(

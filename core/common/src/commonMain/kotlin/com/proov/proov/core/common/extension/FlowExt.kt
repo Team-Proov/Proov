@@ -18,7 +18,7 @@ import kotlin.time.TimeSource
 fun <T> Flow<T>.collectSideEffect(
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
-    action: suspend (T) -> Unit
+    action: suspend (T) -> Unit,
 ) {
     val lifecycle = lifecycleOwner.lifecycle
 
@@ -35,7 +35,7 @@ fun <T> Flow<T>.collectSideEffect(
 fun <T> Flow<T>.collectSingleEvent(
     throttleTime: Long = 500L,
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-    action: suspend (T) -> Unit
+    action: suspend (T) -> Unit,
 ) {
     val lifecycle = lifecycleOwner.lifecycle
     val currentAction by rememberUpdatedState(action)

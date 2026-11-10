@@ -14,10 +14,7 @@ import java.security.ProviderException
 import java.security.UnrecoverableKeyException
 
 /** 암호문을 [dir] 아래에 키별 파일로 저장한다. 읽기와 쓰기는 하나의 락으로 직렬화한다. */
-internal class FileSecureStorage(
-    private val dir: File,
-    private val keys: AesKeys,
-) : SecureStorage {
+internal class FileSecureStorage(private val dir: File, private val keys: AesKeys) : SecureStorage {
     private val mutex = Mutex()
 
     override suspend fun put(key: SecureKey, value: String): Result<Unit> = locked {
@@ -31,8 +28,7 @@ internal class FileSecureStorage(
         runCatching { delete(key) }
     }
 
-    private suspend fun <T> locked(block: () -> T): T =
-        withContext(Dispatchers.IO) { mutex.withLock { block() } }
+    private suspend fun <T> locked(block: () -> T): T = withContext(Dispatchers.IO) { mutex.withLock { block() } }
 
     /** 키 관련 예외일 때만 키를 다시 만들어 1회 재시도한다. 그 외의 예외는 키와 무관하므로 키를 건드리지 않는다. */
     private fun write(key: SecureKey, value: String) {
@@ -85,9 +81,10 @@ internal class FileSecureStorage(
 
     private fun file(key: SecureKey) = File(dir, key.id)
 
-    private fun Exception.isKeyFailure() =
-        this is KeyStoreException || this is ProviderException ||
-            this is InvalidKeyException || this is UnrecoverableKeyException
+    private fun Exception.isKeyFailure() = this is KeyStoreException ||
+        this is ProviderException ||
+        this is InvalidKeyException ||
+        this is UnrecoverableKeyException
 
     /** 다시 시도해도 복구되지 않는 실패: 인증 실패, 변조, 형식 오류, 키 손상 */
     private fun Exception.isPermanent() = this is GeneralSecurityException || this is ProviderException

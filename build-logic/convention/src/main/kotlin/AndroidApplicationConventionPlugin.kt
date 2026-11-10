@@ -16,6 +16,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
         pluginManager.apply(PluginIds.KOTLIN_COMPOSE_COMPILER)
         // createGraphFactory를 쓰는 모듈이므로 컴파일러 플러그인이 필요하다
         pluginManager.apply(PluginIds.METRO)
+        pluginManager.apply(PluginIds.KTLINT)
 
         extensions.configure<ApplicationExtension> {
             compileSdk = libs.intVersion("android-compileSdk")

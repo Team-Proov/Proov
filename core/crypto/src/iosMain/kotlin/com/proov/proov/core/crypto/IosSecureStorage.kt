@@ -14,6 +14,7 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.value
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -85,13 +86,12 @@ class IosSecureStorage : SecureStorage {
 
     override suspend fun remove(key: SecureKey): Result<Unit> = locked { runCatching { delete(key) } }
 
-    private suspend fun <T> locked(block: () -> T): T =
-        withContext(Dispatchers.IO) {
-            mutex.withLock {
-                installChecked
-                block()
-            }
+    private suspend fun <T> locked(block: () -> T): T = withContext(Dispatchers.IO) {
+        mutex.withLock {
+            installChecked
+            block()
         }
+    }
 
     private fun write(key: SecureKey, value: String) {
         val data = value.encodeToByteArray().toNSData()

@@ -146,6 +146,11 @@ class FileSecureStorageTest {
     }
 
     private companion object {
-        fun newKey(): SecretKey = SecretKeySpec(ByteArray(32) { (it + 1).toByte() }.also { java.security.SecureRandom().nextBytes(it) }, "AES")
+        fun newKey(): SecretKey = SecretKeySpec(
+            ByteArray(32) {
+                (it + 1).toByte()
+            }.also { java.security.SecureRandom().nextBytes(it) },
+            "AES",
+        )
     }
 }

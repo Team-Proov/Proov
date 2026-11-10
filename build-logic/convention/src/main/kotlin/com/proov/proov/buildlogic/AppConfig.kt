@@ -28,4 +28,5 @@ internal object PluginIds {
     const val ANDROID_KMP_LIBRARY = "com.android.kotlin.multiplatform.library"
     const val COMPOSE_MULTIPLATFORM = "org.jetbrains.compose"
     const val METRO = "dev.zacsweers.metro"
+    const val KTLINT = "org.jlleitschuh.gradle.ktlint"
 }

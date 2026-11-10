@@ -1,0 +1,21 @@
+root = true
+
+[*]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{kt,kts}]
+indent_size = 4
+ktlint_code_style = intellij_idea
+max_line_length = 120
+ktlint_function_naming_ignore_when_annotated_with = Composable, Test
+
+# 빌드가 생성한 소스(Compose 리소스 접근자 등)는 검사하지 않는다
+[**/build/**]
+ktlint = disabled
+
+# iOS 진입점은 Swift/ObjC 쪽 이름 규칙을 따른다
+[**/iosMain/**/{iOSNetworkMonitor,MainViewController}.kt]
+ktlint_standard_class-naming = disabled
+ktlint_standard_function-naming = disabled

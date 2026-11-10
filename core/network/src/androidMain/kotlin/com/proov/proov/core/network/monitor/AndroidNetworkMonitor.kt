@@ -20,9 +20,7 @@ import java.util.Collections
 @Inject
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
-class AndroidNetworkMonitor(
-    private val context: Context,
-) : NetworkMonitor {
+class AndroidNetworkMonitor(private val context: Context) : NetworkMonitor {
     override val isOnline: Flow<Boolean> = callbackFlow {
         val connectivityManager = context.getSystemService(ConnectivityManager::class.java)
         if (connectivityManager == null) {
@@ -45,12 +43,9 @@ class AndroidNetworkMonitor(
                 trySend(validNetworks.isNotEmpty())
             }
 
-            override fun onCapabilitiesChanged(
-                network: Network,
-                networkCapabilities: NetworkCapabilities
-            ) {
+            override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
                 val isValidated = networkCapabilities.hasCapability(
-                    NetworkCapabilities.NET_CAPABILITY_VALIDATED
+                    NetworkCapabilities.NET_CAPABILITY_VALIDATED,
                 )
                 if (isValidated) {
                     validNetworks += network

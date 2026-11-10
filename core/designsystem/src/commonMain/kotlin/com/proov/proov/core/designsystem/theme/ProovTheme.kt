@@ -18,15 +18,15 @@ private val LocalProovTypography = staticCompositionLocalOf<ProovTypography> {
 /** 사용처: `Proov.colors.primary.green500`, `Proov.typography.body.b16` */
 object Proov {
     val colors: ProovColors
-        @Composable @ReadOnlyComposable get() = LocalProovColors.current
+        @Composable @ReadOnlyComposable
+        get() = LocalProovColors.current
     val typography: ProovTypography
-        @Composable @ReadOnlyComposable get() = LocalProovTypography.current
+        @Composable @ReadOnlyComposable
+        get() = LocalProovTypography.current
 }
 
 @Composable
-fun ProovTheme(
-    content: @Composable () -> Unit
-) {
+fun ProovTheme(content: @Composable () -> Unit) {
     val fontFamily = proovFontFamily()
     val typography = remember(fontFamily) { proovTypography(fontFamily) }
     val colors = remember { ProovColors() }

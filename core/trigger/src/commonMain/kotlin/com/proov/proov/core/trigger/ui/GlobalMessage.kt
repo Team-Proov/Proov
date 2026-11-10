@@ -37,6 +37,7 @@ internal class ToastMessage(val text: String)
 class GlobalMessageState {
     val snackbarHostState = SnackbarHostState()
     internal var toast by mutableStateOf<ToastMessage?>(null)
+
     /** 표시 중인 스낵바. 없으면 null이며, 토스트의 하단 여백 계산에도 쓰인다. */
     internal var snackbar by mutableStateOf<SnackbarState?>(null)
 }
@@ -45,10 +46,7 @@ class GlobalMessageState {
 fun rememberGlobalMessageState(): GlobalMessageState = remember { GlobalMessageState() }
 
 @Composable
-fun rememberGlobalUiEventHolder(
-    state: GlobalMessageState,
-    dialogStateHolder: DialogStateHolder,
-): GlobalUiEventHolder {
+fun rememberGlobalUiEventHolder(state: GlobalMessageState, dialogStateHolder: DialogStateHolder): GlobalUiEventHolder {
     val coroutineScope = rememberCoroutineScope()
     return remember(state, dialogStateHolder, coroutineScope) {
         GlobalUiEventHolder(
@@ -82,10 +80,7 @@ fun rememberGlobalUiEventHolder(
 
 /** Scaffold의 snackbarHost 슬롯에 넣는다. 토스트와 스낵바를 같은 위치에 표시한다. */
 @Composable
-fun GlobalMessageHost(
-    state: GlobalMessageState,
-    modifier: Modifier = Modifier,
-) {
+fun GlobalMessageHost(state: GlobalMessageState, modifier: Modifier = Modifier) {
     val toast = state.toast
     LaunchedEffect(toast) {
         if (toast != null) {

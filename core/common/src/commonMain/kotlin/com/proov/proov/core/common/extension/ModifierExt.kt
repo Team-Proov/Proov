@@ -57,26 +57,26 @@ fun Modifier.noRippleClickable(
     enabled: Boolean = true,
     onClickLabel: String? = null,
     role: Role? = null,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ): Modifier = this then NoRippleClickableElement(
     enabled = enabled,
     onClickLabel = onClickLabel,
     role = role,
-    onClick = onClick
+    onClick = onClick,
 )
 
 private data class NoRippleClickableElement(
     val enabled: Boolean,
     val onClickLabel: String?,
     val role: Role?,
-    val onClick: () -> Unit
+    val onClick: () -> Unit,
 ) : ModifierNodeElement<NoRippleClickableNode>() {
 
     override fun create(): NoRippleClickableNode = NoRippleClickableNode(
         enabled = enabled,
         onClickLabel = onClickLabel,
         role = role,
-        onClick = onClick
+        onClick = onClick,
     )
 
     override fun update(node: NoRippleClickableNode) {
@@ -98,16 +98,14 @@ private class NoRippleClickableNode(
     var enabled: Boolean,
     var onClickLabel: String?,
     var role: Role?,
-    var onClick: () -> Unit
-) : Modifier.Node(), PointerInputModifierNode, SemanticsModifierNode {
+    var onClick: () -> Unit,
+) : Modifier.Node(),
+    PointerInputModifierNode,
+    SemanticsModifierNode {
 
     private var pointerDown = false
 
-    override fun onPointerEvent(
-        pointerEvent: PointerEvent,
-        pass: PointerEventPass,
-        bounds: IntSize
-    ) {
+    override fun onPointerEvent(pointerEvent: PointerEvent, pass: PointerEventPass, bounds: IntSize) {
         if (!enabled || pass != PointerEventPass.Main) return
 
         when (pointerEvent.type) {
@@ -120,10 +118,11 @@ private class NoRippleClickableNode(
 
             PointerEventType.Release -> {
                 val releasedInside = pointerEvent.changes.any { change ->
-                    change.changedToUp() && !change.isOutOfBounds(
-                        size = bounds,
-                        extendedTouchPadding = Size.Zero,
-                    )
+                    change.changedToUp() &&
+                        !change.isOutOfBounds(
+                            size = bounds,
+                            extendedTouchPadding = Size.Zero,
+                        )
                 }
 
                 val shouldClick = pointerDown && releasedInside
@@ -150,7 +149,7 @@ private class NoRippleClickableNode(
             role?.let { role = it }
 
             onClick(
-                label = onClickLabel
+                label = onClickLabel,
             ) {
                 onClick()
                 true
@@ -163,17 +162,12 @@ private class NoRippleClickableNode(
 fun Modifier.disableNestedScroll(): Modifier = composed {
     val connection = remember {
         object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                return Offset.Zero
-            }
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset = Offset.Zero
 
-            override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
-                return available
-            }
+            override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset =
+                available
 
-            override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
-                return available
-            }
+            override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity = available
         }
     }
     this.nestedScroll(connection)

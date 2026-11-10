@@ -4,6 +4,8 @@ agp = "9.1.1"
 kotlin = "2.4.20"
 jetbrainsKotlinJvm = "2.4.20"
 
+# Lint
+ktlint-gradle = "14.2.0"
 
 # Android SDK
 android-compileSdk = "37"
@@ -116,6 +118,7 @@ android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", ver
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 compose-gradlePlugin = { group = "org.jetbrains.compose", name = "compose-gradle-plugin", version.ref = "composeMultiplatform" }
 compose-compilerGradlePlugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin" }
+ktlint-gradlePlugin = { group = "org.jlleitschuh.gradle", name = "ktlint-gradle", version.ref = "ktlint-gradle" }
 
 [plugins]
 # Convention Plugins (build-logic의 gradlePlugin id와 일치해야 한다. includeBuild로 해석되므로 version은 unspecified)
@@ -145,6 +148,8 @@ jetbrainsKotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrains
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
+# Lint (convention plugin이 모든 모듈에 적용하며, 루트 apply false는 클래스패스 등록용이다)
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
 
 
 [bundles]

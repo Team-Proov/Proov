@@ -15,6 +15,7 @@ class KmpLibraryConventionPlugin : Plugin<Project> {
         pluginManager.apply(PluginIds.ANDROID_KMP_LIBRARY)
         // 어노테이션이 조용히 무시되는 일을 막기 위해 모든 모듈에 적용한다
         pluginManager.apply(PluginIds.METRO)
+        pluginManager.apply(PluginIds.KTLINT)
 
         extensions.configure<KotlinMultiplatformExtension> {
             iosArm64()
