@@ -30,8 +30,8 @@ dependencyResolutionManagement {
     }
 }
 
-include(":androidApp")
-include(":shared")
+include(":app:androidApp")
+include(":app:shared")
 
 include(
     ":core:common",
@@ -44,5 +44,6 @@ include(
     ":core:model"
 )
 include(
-    ":presentation:home"
+    ":presentation:home:api",
+    ":presentation:home:impl",
 )

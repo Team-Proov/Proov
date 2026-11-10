@@ -4,6 +4,7 @@ agp = "9.1.1"
 kotlin = "2.4.20"
 jetbrainsKotlinJvm = "2.4.20"
 
+
 # Android SDK
 android-compileSdk = "37"
 android-minSdk = "24"
@@ -35,7 +36,7 @@ kotlinx-coroutines = "1.11.0"
 metro = "1.5.2"
 
 # Navigation
-navigation = "2.10.0"
+navigation3 = "1.2.0"
 
 # Image
 coil = "3.6.3"
@@ -71,7 +72,8 @@ metrox-viewmodel = { group = "dev.zacsweers.metro", name = "metrox-viewmodel", v
 metrox-viewmodel-compose = { group = "dev.zacsweers.metro", name = "metrox-viewmodel-compose", version.ref = "metro" }
 
 # Navigation
-navigation-compose = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
+navigation3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
+androidx-lifecycle-viewmodelNavigation3 = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "androidx-lifecycle" }
 
 # Coil
 coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
@@ -144,6 +146,7 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMul
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 
+
 [bundles]
 # core:network commonMain (HttpClient 설정에만 쓰는 구현 의존성)
 ktor-common = [
@@ -160,13 +163,12 @@ compose-common = [
     "compose-ui",
 ]
 
-# proov.kmp.feature가 모든 presentation 모듈에 공통으로 적용
+# proov.kmp.feature가 모든 presentation impl 모듈에 공통으로 적용
 compose-feature = [
     "androidx-lifecycle-viewmodelCompose",
     "androidx-lifecycle-runtimeCompose",
     "compose-uiToolingPreview",
     "compose-components-resources",
-    "navigation-compose",
     "metrox-viewmodel-compose",
     "kotlinx-immutable",
 ]
