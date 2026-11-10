@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: en-US
+reviews:
+  profile: chill
+  auto_review:
+    enabled: true
+    base_branches:
+      - develop
+  path_filters:
+    - "!**/build/**"
+    - "!app/iosApp/**/*.pbxproj"
+  path_instructions:
+    - path: "presentation/**"
+      instructions: >-
+        Review against docs/architecture/presentation.md and docs/conventions/compose.md.
+        Check the Route/Screen/Contract structure, stringResource usage, and that no module
+        depends on data or infrastructure modules.
+    - path: "core/**"
+      instructions: >-
+        Review against docs/architecture/modularization.md. Check the dependency direction
+        and that core modules do not depend on presentation or app modules.
+    - path: "**/*.gradle.kts"
+      instructions: >-
+        Check that any new dependency has a stated reason and impact, and that module
+        dependencies follow the rules enforced by verifyModuleDependencies.
