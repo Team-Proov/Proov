@@ -1,5 +1,5 @@
 plugins {
-    id("proov.kmp.compose")
+    alias(libs.plugins.proov.kmp.compose)
 }
 
 kotlin {
@@ -14,6 +14,7 @@ kotlin {
         commonMain.dependencies {
             // Res 클래스 생성과 Font(Res.font.xxx) 사용에 필요
             implementation(libs.compose.components.resources)
+            implementation(libs.compose.uiToolingPreview)
         }
     }
 }

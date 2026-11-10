@@ -1,3 +1,3 @@
 plugins {
-    id("proov.kmp.feature")
+    alias(libs.plugins.proov.kmp.feature)
 }

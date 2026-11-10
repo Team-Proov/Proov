@@ -1,5 +1,7 @@
 rootProject.name = "Proov"
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     includeBuild("build-logic")
     repositories {
@@ -30,5 +32,17 @@ dependencyResolutionManagement {
 
 include(":androidApp")
 include(":shared")
-include(":core:designsystem")
-include(":presentation:home")
+
+include(
+    ":core:common",
+    ":core:crypto",
+    ":core:designsystem",
+    ":core:localstorage",
+    ":core:navigation",
+    ":core:network",
+    ":core:trigger",
+    ":core:model"
+)
+include(
+    ":presentation:home"
+)

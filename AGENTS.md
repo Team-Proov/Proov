@@ -22,7 +22,7 @@ Kotlin·Compose 코드 구현과 변경 리뷰, 모듈 구조, 계층 책임, �
 
 ## 화면 네비게이션
 
-화면 이동과 탭 구조를 구현·변경할 때는 [docs/NAVIGATION.md](docs/NAVIGATION.md)(작성 예정)를 먼저 읽고 따른다.
+화면 이동과 탭 구조를 구현·변경할 때는 [docs/NAVIGATION.md](docs/NAVIGATION.md)를 먼저 읽고 따른다.
 
 ## 서버 연동 명세
 
