@@ -20,4 +20,9 @@ Principles that hold on Android and iOS. The app is always edge-to-edge (`enable
 | Other screen (no tab bar) | status bar | `navigationBarsPadding()` | `imePadding()` on the scroll container |
 | Screen with a fixed bottom button | status bar | `navigationBarsPadding()` on the button area | Button area uses `imePadding()`; the scroll area above it shrinks |
 
+| Don't | Do |
+| --- | --- |
+| `Modifier.navigationBarsPadding()` on a tab screen (the bottom bar already consumed it) | No bottom inset modifier on the tab screen; the bottom bar handles it |
+| `Modifier.padding(bottom = 80.dp)` to keep a list clear of the bar | `LazyColumn(contentPadding = PaddingValues(bottom = ...))` |
+
 Add focus-based scrolling helpers only when `imePadding` plus scrolling is not enough.

@@ -28,3 +28,7 @@ The mapping from server error codes to `Server(code)` is added to this table whe
 
 - In `suspend` code use `suspendRunCatching` from `core:common`, not `runCatching`. Plain `runCatching` swallows `CancellationException`.
 - `suspendRunCatching` rethrows `CancellationException`, but treats `TimeoutCancellationException` as a failure.
+
+| Don't | Do |
+| --- | --- |
+| `runCatching { api.fetch() }` in a `suspend` function | `suspendRunCatching { api.fetch() }` |

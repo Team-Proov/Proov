@@ -9,6 +9,11 @@ Rules for writing composables so that Compose skips work. Measurement procedure 
 - Pass behavior as lambdas. Do not pass a ViewModel or a large object to a child.
 - Lists in `UiState` use `ImmutableList`. Elsewhere a plain `List` is the default.
 
+| Don't | Do |
+| --- | --- |
+| `PledgeCard(uiState = uiState)` (child reads one field of the whole state) | `PledgeCard(title = uiState.title, onClick = onClick)` |
+| `PledgeList(viewModel = viewModel)` | `PledgeList(items = uiState.items, onItemClick = onItemClick)` |
+
 ## Stability
 
 - Strong skipping is on, so unstable parameters are compared by instance. Prefer immutable data classes (`val` properties, `ImmutableList`) so equality checks hit.
@@ -21,6 +26,11 @@ Read fast-changing state (scroll offset, animation value) as late as possible, i
 - Use the lambda form of modifiers: `Modifier.offset { }`, `Modifier.graphicsLayer { }`, `Modifier.drawBehind { }`.
 - Wrap derived values in `derivedStateOf` when the output changes less often than the input (for example "is scrolled past the first item").
 - Pass `() -> T` instead of `T` to a child that only needs the value in layout or draw.
+
+| Don't | Do |
+| --- | --- |
+| `Modifier.offset(y = scrollState.value.dp)` (recomposes on every scroll frame) | `Modifier.offset { IntOffset(0, scrollState.value) }` |
+| `Header(scrollOffset = scrollState.value)` | `Header(scrollOffset = { scrollState.value })` |
 
 ## Lists
 

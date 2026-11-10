@@ -12,9 +12,17 @@ Rules for screens in `presentation:<x>:impl`. Navigation is in [navigation](navi
 - Use one lambda per event. When a screen has many events, use a single `onEvent` lambda.
 - Every `XxxScreen` has a `@Preview` wrapped in `ProovTheme`.
 
+| Don't | Do |
+| --- | --- |
+| `private fun HomeScreen(viewModel: HomeViewModel)` | `private fun HomeScreen(uiState: HomeUiState, onRefresh: () -> Unit)` |
+
 ## Contract file
 
 Each screen has one `XxxContract.kt` that holds two top-level types: `XxxUiState` and `XxxSideEffect`. Do not nest them in a wrapper object. If the file grows, split the file and keep the type names.
+
+| Don't | Do |
+| --- | --- |
+| `object HomeContract { data class UiState(...); sealed interface SideEffect }` | `data class HomeUiState(...)` and `sealed interface HomeSideEffect` as separate top-level types in `HomeContract.kt` |
 
 ## UiState
 

@@ -25,9 +25,17 @@ Do not keep a whole screen in one file or one composable. Split when:
 
 Splitting improves readability and encapsulation, and a narrow parameter list lets Compose skip the child when the parent recomposes ([compose-performance](compose-performance.md)).
 
+| Don't | Do |
+| --- | --- |
+| One `HomeScreen` of 400 lines with header, list, and card inline | `HomeScreen` composes `HomeHeader`, `PledgeList`, and `PledgeCard`, each with its own narrow parameters |
+
 ## Parameters
 
 Order: required parameters, `modifier: Modifier = Modifier`, optional parameters, `content`. Do not document `modifier` in `@param`.
+
+| Don't | Do |
+| --- | --- |
+| `fun PledgeCard(modifier: Modifier = Modifier, title: String, onClick: () -> Unit)` | `fun PledgeCard(title: String, onClick: () -> Unit, modifier: Modifier = Modifier)` |
 
 ## Tokens
 
