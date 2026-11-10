@@ -7,7 +7,7 @@ Read the row that matches your task before editing. Rows marked `planned` have n
 | Layer responsibilities, dependency direction, state and DI overview | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | Modules, adding a module, dependency rules, dependency policy | [architecture/modularization.md](architecture/modularization.md) |
 | Navigation, `NavKey`, entries, tabs | [architecture/navigation.md](architecture/navigation.md) |
-| Route, Screen, Contract (`UiState`, `SideEffect`), `ScreenState`, ViewModel | [architecture/presentation.md](architecture/presentation.md) |
+| Route, Screen, Contract (`UiState`, `SideEffect`, `Action`), `ScreenState`, ViewModel | [architecture/presentation.md](architecture/presentation.md) |
 | UseCase, Repository interface, domain models | [architecture/domain-layer.md](architecture/domain-layer.md) |
 | Repository implementation, DTO, mapping, storage | [architecture/data-layer.md](architecture/data-layer.md) |
 | Failures, `ProovException`, `suspendRunCatching`, server error codes | [architecture/error-handling.md](architecture/error-handling.md) |
