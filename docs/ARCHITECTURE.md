@@ -1,52 +1,43 @@
-# Proov 아키텍처
+# Proov Architecture
 
-## 목적
+Single source for layer responsibilities, dependency direction, state management, and DI principles. Module details are in [architecture/modularization.md](architecture/modularization.md).
 
-이 문서는 모듈 구조, 계층 책임, 의존성 방향, 상태 관리, DI 규칙의 단일 기준이다.
+## Layers
 
-## 모듈 구조
+Proov follows Clean Architecture. Dependencies point inward: `presentation` and `data` depend on `domain`; `domain` depends on nothing platform-specific.
 
-| 모듈 | 책임 |
-| --- | --- |
-| `androidApp` | Android 진입점(`MainActivity`)과 Android 전용 설정 |
-| `iosApp` | iOS 진입점. SwiftUI 코드는 이 모듈에만 둔다 |
-| `shared` | iOS Framework 우산 모듈이자 앱의 조합 지점. `commonMain`의 `ui`(`ProovRoot`, `ProovApp`, `ProovAppState`, `MainViewModel`, `MainTab`)와 `di`(`AppGraph`, ViewModel 팩토리, 이미지 로더 바인딩), 플랫폼별 그래프(`AndroidAppGraph`, `IosAppGraph`), iOS 진입점(`MainViewController`)을 둔다 |
-| `presentation:*` | 기능별 화면, UiState, ViewModel, 라우트와 `NavGraphBuilder` 확장 |
-| `core:*` | 여러 기능이 공유하는 모듈(`core:designsystem`, `core:navigation` 등) |
-| `core:common` | 여러 모듈이 공유하는 확장 함수(`extension`)와 유틸리티(`util`). Compose와 Lifecycle의 KMP 아티팩트까지만 의존하며 `implementation`으로만 선언해 소비 모듈로 전이하지 않는다. 플랫폼 API는 쓰지 않고, 다른 `core:*` 모듈을 참조하지 않는다 |
-| `core:localstorage` | 일반 설정 저장소(DataStore Preferences, KMP 공통 구현). Metro `LocalStorageProvider`가 `DataStore<Preferences>`를 제공하고, 파일 경로(`@Named(PREFERENCES_FILE)`)만 플랫폼 그래프가 제공한다. 토큰 같은 민감한 값의 보안 저장소는 `core:crypto`가 맡는다 |
-| `core:crypto` | 토큰 같은 민감한 값의 보안 저장소. `commonMain`의 `SecureStorage`(`put`/`get`/`remove`)와 `SecureKey`(`ACCESS_TOKEN`, `REFRESH_TOKEN`; 파일 이름, Keychain 계정, GCM AAD에 쓰이는 고정 `id`)를 두고, 구현체는 `@ContributesBinding`으로 바인딩한다. Android(`AndroidSecureStorage`)는 Keystore AES-256-GCM 키(직접 JCA 사용, Tink 없음)로 암호화한 파일을 `noBackupFilesDir`에 키별로 저장하고, 키 관련 예외에서만 키를 재생성해 1회 재시도하며 재생성 시 저장된 항목을 모두 지운다. iOS(`IosSecureStorage`)는 Keychain(`AfterFirstUnlockThisDeviceOnly`)에 저장하고 재설치 시 잔여 항목을 지운다. `get`은 영구 실패한 항목을 삭제하고 `null`을 반환하며 일시 오류만 예외로 전파한다. 메모리 캐시와 저장 실패 시 폴백은 이 모듈이 아니라 `TokenManager`의 책임이다 |
-| `core:trigger` | 앱 공통 UI 이벤트(토스트, 스낵바, 다이얼로그). `GlobalUiEventHolder`와 `LocalGlobalUiEventTrigger`, 표시를 담당하는 `GlobalMessageHost`, 앱 공통 다이얼로그 문구를 정의한 `DialogType`을 둔다. `shared`의 `ProovApp`이 홀더를 제공하고 다이얼로그는 슬롯 하나로 표시한다. 각 화면은 사이드 이펙트를 수집해 `LocalGlobalUiEventTrigger.current`로 호출하며, `DialogType`에는 앱 공통 정책만 두고 기능 전용 다이얼로그는 해당 화면에서 `ProovDialog`를 직접 선언한다 |
-| `core:network` | Ktor `HttpClient` 생성과 Metro `NetworkProvider`. 서버 base URL은 `local.properties`의 `BASE_URL`로 주입한다. `NetworkMonitor`(`isOnline: Flow<Boolean>`) 인터페이스는 공통이고, 구현체(`AndroidNetworkMonitor`, `iOSNetworkMonitor`)는 각 플랫폼 소스셋에서 `@ContributesBinding`으로 바인딩한다. 오프라인 여부는 `ProovAppState.isOffline`으로 노출한다 |
+| Layer | Modules | Responsibility |
+| --- | --- | --- |
+| Presentation | `presentation:<feature>:api`, `presentation:<feature>:impl` | Screens, `UiState`, ViewModel, navigation keys and entries |
+| Domain | `domain:<feature>` | Business rules: Repository interfaces, UseCases, feature models |
+| Data | `data:<feature>` | Repository implementations, DTOs, mapping to domain models |
+| Core | `core:*` | Shared building blocks: UI (`designsystem`, `navigation`, `trigger`), infrastructure (`network`, `crypto`, `localstorage`), shared models and utilities |
+| App | `app:androidApp`, `app:iosApp`, `app:shared` | Entry points and the composition point |
 
-## 의존성 방향
+`domain:<feature>` and `data:<feature>` are created when the first feature needs them. Their rules are in [domain-layer](architecture/domain-layer.md) and [data-layer](architecture/data-layer.md).
 
-`androidApp`/`iosApp` → `shared` → `presentation:*` → `core:*` 방향으로만 의존한다.
+## Dependency direction
 
-- `@DependencyGraph`는 `shared`의 플랫폼 소스셋(`androidMain`, `iosMain`)에만 둔다. Metro는 그래프를 소유한 모듈의 컴파일 클래스패스에서 기여(`@ContributesTo` 등)를 수집하므로, `@ContributesTo`/`@ContributesIntoMap`을 쓰는 모듈은 `shared`가 직접 의존해야 한다.
-- `presentation:*`과 `core:*`는 `shared`를 참조하지 않는다. ViewModel 주입은 `metrox-viewmodel-compose`의 `metroViewModel()`만 쓴다.
+```
+app:androidApp / app:iosApp -> app:shared -> presentation:*:impl -> domain:* -> core:model
+                                          -> data:*              -> domain:*, core infra
+```
 
-- `core:*`는 `presentation:*`과 `shared`를 참조하지 않는다.
-- `presentation:*` 모듈끼리는 서로 직접 참조하지 않는다. 화면 간 이동은 `shared`에서 조합한다.
-- 플랫폼 API는 `commonMain`에서 직접 쓰지 않고 `expect`/`actual` 또는 인터페이스 주입으로 분리한다.
+- `presentation:*` depends on `domain:*` and UI `core:*` modules. It never depends on `data:*` or infrastructure `core:*` (`core:network`, `core:crypto`, `core:localstorage`).
+- `domain:*` depends only on Kotlin stdlib, coroutines, `core:model`, and Metro annotation APIs. No Compose, Ktor, platform APIs, or other `domain:*` modules. A type shared by two features moves to `core:model` (Rule of Three, see [compose](conventions/compose.md#placement)).
+- `data:*` depends on its own `domain:*`, `core:model`, and infrastructure modules. DTOs and implementations are `internal`.
+- `core:*` never depends on `presentation:*`, `domain:*`, `data:*`, or `app:*`.
+- Platform APIs are not used directly in `commonMain`; isolate them with `expect`/`actual` or an injected interface.
+- `verifyModuleDependencies` enforces these rules where the modules exist. Extend it when `domain` and `data` modules are added.
 
-## 상태 관리
+## State management
 
-MVVM으로 구성하며 화면 상태는 `UiState`로, 사용자 동작은 ViewModel의 함수 호출로 전달한다.
+MVVM. A ViewModel exposes one `UiState` as `StateFlow`; user actions call ViewModel functions; one-off events use a side-effect channel. Details are in [presentation](architecture/presentation.md).
 
-- ViewModel은 화면별 `UiState`를 `StateFlow`로 노출한다.
-- Compose UI는 `UiState`를 읽어 그리고 이벤트는 함수로 전달한다.
-- 상태 전이는 `commonTest`에서 단위 테스트로 고정한다. 외부 의존성은 fake로 분리한다.
+## Dependency injection
 
-## 의존성 주입과 네트워크
+Metro with `AppScope` only. Modules contribute bindings with `@ContributesTo` / `@ContributesBinding` / `@ContributesIntoMap`; the `@DependencyGraph` lives in `app:shared`. Details are in [di](architecture/di.md).
 
-- DI는 Metro, 네트워크는 Ktor를 사용한다.
-- 각 모듈은 `@ContributesTo(AppScope::class)`로 바인딩을 제공하고, 그래프(`@DependencyGraph`)는 모든 모듈을 조합하는 `shared`에만 둔다. 의존성 누락과 순환은 컴파일 시점에 검출된다.
-- 현재는 네트워크 기본 설정만 구성하며, 서버 연동 구현은 `docs/server` 명세가 작성된 뒤에 시작한다.
+## Errors
 
-## 모듈 추가 규칙
-
-- 새 모듈은 `build-logic`의 컨벤션 플러그인(`proov.kmp.library`, `proov.kmp.compose`, `proov.kmp.serialization`, `proov.kmp.feature`, 앱 모듈은 `proov.android.application`)을 적용한다. 적용은 `alias(libs.plugins.proov.kmp.library)`처럼 버전 카탈로그 별칭으로 하며, 플러그인을 추가하면 `build-logic`의 `gradlePlugin` 등록과 `libs.versions.toml`의 `[plugins]`에 함께 등록한다.
-- 플러그인 클래스(진입점)는 `build-logic/convention/src/main/kotlin` 루트에 두고, 구현체(`DependencyManager`, `AppConfig`, `Catalog`)는 `com.proov.proov.buildlogic` 패키지에 `internal`로 숨긴다. 플러그인이 추가하는 의존성은 `DependencyManager`에 기능별 함수로 모은다. SDK·JVM 버전·namespace 규칙·플러그인 ID 상수는 `AppConfig.kt`에서 관리한다. JVM 타깃은 11이다.
-- 모듈 간 의존은 `implementation(projects.core.model)`처럼 타입 세이프 접근자를 쓴다. 별도 빌드인 `build-logic` 안에서는 접근자를 쓸 수 없으므로, 플러그인이 추가하는 core 의존(`DependencyManager.addFeatureDependencies`)만 경로 문자열로 남긴다.
-- 모듈 추가 시 `settings.gradle.kts`에 등록하고 이 문서의 모듈 표를 갱신한다.
+Repositories return `kotlin.Result`; failures are `ProovException` subtypes defined in `domain`. Details are in [error-handling](architecture/error-handling.md).

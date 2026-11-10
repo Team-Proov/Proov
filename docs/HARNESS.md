@@ -1,60 +1,75 @@
-# Proov 개발 하네스
+# Proov Harness
 
-## 목적
+## Purpose
 
-이 문서는 에이전트가 변경을 반복 가능하게 구현하고 검증하도록 하는 작업 루프다. 계층 규칙은 [ARCHITECTURE.md](ARCHITECTURE.md)가 단일 기준이다.
+The work loop and verification gates that let an agent make changes repeatably. Layer rules are in [ARCHITECTURE.md](ARCHITECTURE.md).
 
-## 작업 루프
+## Work loop
 
-코드, 설정, 테스트를 변경하는 작업은 다음 순서로 수행한다.
+For any change to code, settings, or tests:
 
-1. **정렬**: 요청의 대상, 변경하지 않을 범위, 완료 조건을 확인한다. 필요한 파일·도구·권한이 실제로 사용 가능한지 확인하고, 모듈이나 계층을 건드리면 `ARCHITECTURE.md`를 읽는다. 완료 조건이 제품 판단을 요구하거나 서로 충돌하면 구현 전에 사용자에게 결정받는다.
-2. **작은 변경**: 완료 조건을 만족하는 최소 변경을 만든다. 기존 패턴과 공개 인터페이스를 우선 활용하고, 새 의존성은 필요성과 영향을 확인한다.
-3. **검증**: 아래 검증 게이트 중 변경 범위에 해당하는 모든 항목을 실행한다. 실패하면 원인에 대한 새 가설과 수정이 있을 때만 다시 실행한다.
-4. **기록**: 변경한 파일, 실행한 검증과 결과, 실행하지 못한 검증과 이유를 결과에 남긴다.
+1. **Align.** Confirm the target, what must not change, and the done condition. Confirm the needed files, tools, and permissions exist. Read `ARCHITECTURE.md` when touching a module or a layer. If the done condition needs a product decision or conflicts with itself, ask the user before implementing.
+2. **Small change.** Make the smallest change that meets the done condition. Prefer existing patterns and public interfaces. For a new dependency, confirm the need and the impact.
+3. **Verify.** Run every verification gate that matches the change. Re-run after a failure only when you have a new hypothesis and a change that follows from it.
+4. **Record.** In the result, list the changed files, the verification run and its result, and any verification not run with the reason.
 
-## 완료·재시도·에스컬레이션
+## Done, retry, escalation
 
-- **완료**: 요청한 완료 조건이 충족되고, 적용되는 모든 검증 게이트가 통과했으며, 변경과 검증 결과가 기록된 상태다.
-- **재시도**: 실패 로그나 재현 결과로 설명할 수 있는 새 원인 가설과 그에 따른 변경이 있을 때만 재시도한다.
-- **에스컬레이션**: 같은 검증이 새 증거 없이 두 번 실패했거나, 필요한 파일·도구·권한이 없거나, 제품·보안·되돌리기 어려운 판단이 필요하면 작업을 멈추고 관찰한 증거와 필요한 결정을 사용자에게 제시한다.
+- **Done:** the done condition is met, every applicable gate passes, and the change and results are recorded.
+- **Retry:** only with a new cause hypothesis, explained by a failure log or a reproduction, and a change that follows from it.
+- **Escalate:** stop and show the user the evidence and the decision needed when the same check fails twice without new evidence, when a needed file, tool, or permission is missing, or when a product, security, or hard-to-reverse decision is required.
 
-## 검증 게이트
+## Verification gates
 
-개발 환경이 Windows이므로 명령은 `.\gradlew.bat`로 실행한다.
+The dev machine is Windows; run Gradle as `.\gradlew.bat`.
 
-| 변경 범위 | 필수 검증 |
+| Change | Required verification |
 | --- | --- |
-| UiState 또는 ViewModel | 상태 전이를 `commonTest` 단위 테스트로 고정한다. 외부 의존성은 fake로 분리한다. |
-| 일반 Kotlin/Compose 코드 | `.\gradlew.bat :androidApp:assembleDebug :shared:testAndroidHostTest :androidApp:lintDebug`를 실행한다. |
-| `core:*`, `build-logic`, Gradle, Manifest | 위 검증에 더해 영향을 받는 모든 모듈의 빌드와 테스트를 실행한다. |
-| iOS 전용 코드(`iosMain`, `iosApp`) | 로컬(Windows)에서는 실행할 수 없다. 미검증으로 명시하고 macOS 또는 CI에서 확인이 필요하다고 보고한다. |
-| 핵심 사용자 흐름 | 준비된 기기 또는 에뮬레이터에서 직접 검증하거나 UI 테스트를 수행한다. |
+| Any Kotlin or Gradle file | `.\gradlew.bat ktlintCheck` (run `ktlintFormat` to fix) |
+| General Kotlin/Compose code | `.\gradlew.bat :app:androidApp:assembleDebug :app:shared:testAndroidHostTest :app:androidApp:lintDebug` |
+| `core:*`, `build-logic`, Gradle, Manifest, any module dependency | The checks above, plus `.\gradlew.bat verifyModuleDependencies`, plus build and test of every affected module |
+| UiState or ViewModel | Pin state transitions with `commonTest` unit tests; replace external dependencies with fakes |
+| iOS-only code (`iosMain`, `app:iosApp`) | Cannot run on Windows. Report it as unverified and as needing macOS or CI |
+| Core user flow | Verify on a prepared device or emulator, or with a UI test |
 
-### iOS 검증 상태 처리
+### CI and review
 
-Android 검증 게이트를 통과하면 완료로 처리하되, 결과에 "iOS 미검증: macOS 또는 CI(GitHub Actions) 확인 필요"를 반드시 명시한다. `iosMain`이나 `iosApp`을 변경한 경우에는 이 미검증 항목을 경고로 별도 표시한다.
+`.github/workflows/ci.yml` runs `ktlintCheck` + `verifyModuleDependencies` (job `check`) and the Android build, tests, and lint (job `build`) on pull requests to `develop`. Both must pass before merge. CodeRabbit (`.coderabbit.yaml`, English) comments on pull requests; it does not block merge.
 
-## 불변 조건
+### iOS status
 
-- 코드와 문서는 저장소 안에서 확인 가능한 근거를 기준으로 판단한다. 채팅, 개인 메모, 추측만으로 동작이나 계약을 확정하지 않는다.
-- 검증 실패를 무시하거나 임시로 약화하지 않는다. 재현 불가, 환경 문제, 제품 판단이 원인이라면 관찰한 증거와 다음에 필요한 결정을 명시해 에스컬레이션한다.
-- 요청 범위와 직접 관계없는 정리·리팩터링은 별도 변경으로 분리한다.
-- 외부 시스템 변경, 비밀값 접근, 되돌리기 어려운 작업은 현재 권한과 승인 절차를 확인한 뒤 수행한다.
+If the Android gates pass, the work is done, but the result must state "iOS unverified: needs macOS or CI (GitHub Actions)". When `iosMain` or `app:iosApp` changed, show this as a separate warning.
 
-## 실행 경로
+### Required tests by layer
 
-기본 경로는 한 에이전트가 작업 루프를 끝까지 수행하는 순차 실행이다. 사용자가 병렬 또는 하위 에이전트 작업을 요청했고, 하위 작업이 서로 독립적일 때만 분리한다.
+| Layer | Required | Not required |
+| --- | --- | --- |
+| `presentation:*` ViewModel | State transitions and side-effect emission in `commonTest`, with Repository and UseCase replaced by fakes | Composable unit tests |
+| `domain:*` | Every UseCase that has a business rule, with plain inputs and outputs | UseCases that only forward a Repository call (they should not exist) |
+| `data:*` | Error mapping to `ProovException` (Ktor `MockEngine`, `commonTest`) and DTO-to-model mapping | Tests of delegation or library behavior |
 
-- 각 하위 작업에는 소유 파일 또는 책임, 입력, 완료 조건, 필요한 권한을 명시한다.
-- 한 하위 작업의 결과를 다른 작업의 입력으로 쓰는 경우에는 선행 결과와 검증 증거가 나온 뒤 다음 작업을 시작한다.
-- 결과를 합친 뒤에는 통합 변경을 대상으로 검증 게이트를 다시 실행한다.
+Keep a fake inside the module's `commonTest`. When a third module needs the same fake, move it to a `core:testing` module.
 
-## 피드백 루프
+## Invariants
 
-리뷰, 버그, 테스트 실패에서 같은 종류의 문제가 반복되면 다음 순서로 개선한다.
+- Decide from evidence in the repository. Do not settle behavior or a contract from chat, personal notes, or guesses alone.
+- Never ignore or weaken a failing check. If the cause is non-reproducibility, the environment, or a product decision, escalate with the evidence and the decision needed.
+- Keep cleanups and refactors unrelated to the request in a separate change.
+- Before an external-system change, secret access, or a hard-to-reverse action, confirm the current permission and approval process.
 
-1. 원인과 재현 방법을 테스트 또는 문서에 기록한다.
-2. 자동으로 판별 가능한 규칙이면 단위 테스트나 lint 같은 구조 검증으로 승격한다.
-3. 판단이 필요한 규칙이면 가장 가까운 단일 기준 문서에 추가한다.
-4. 규칙을 추가한 뒤 해당 검사를 실행해 실제로 위반을 잡는지 확인한다.
+## Execution path
+
+By default one agent runs the work loop to the end, sequentially. Split work only when the user asks for parallel or sub-agent work and the sub-tasks are independent.
+
+- Give each sub-task its owned files or responsibility, inputs, done condition, and permissions.
+- When one result feeds another task, start the next task only after the earlier result and its verification evidence exist.
+- After merging results, run the verification gates again on the combined change.
+
+## Feedback loop
+
+When the same kind of problem repeats in review, bugs, or test failures:
+
+1. Record the cause and how to reproduce it in a test or document.
+2. If a tool can judge the rule, promote it to a unit test, lint rule, or Gradle check (as `verifyModuleDependencies` does).
+3. If it needs judgment, add it to the nearest single-source document.
+4. After adding the rule, run the check and confirm it catches a violation.

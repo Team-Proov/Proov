@@ -1,3 +1,3 @@
-# Proov 서버 API 명세
+# Proov Server API Spec
 
-작성 예정: 서버 연동을 시작하는 시점에 기능별 명세를 이 디렉터리에 작성한다.
+Planned. When server work starts, write one spec per feature in this directory (request, response, auth, error codes). Until then no server call is implemented.
